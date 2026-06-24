@@ -1,0 +1,105 @@
+{
+  "aux_llm": {
+    "type": "object",
+    "description": "辅助判定模型配置 (通常建议使用更便宜、响应更快的模型)",
+    "items": {
+      "api_base": {
+        "type": "string",
+        "description": "API Base URL",
+        "default": "https://api.openai.com/v1",
+        "hint": "OpenAI 格式的 API 基础地址"
+      },
+      "api_key": {
+        "type": "string",
+        "description": "API Key",
+        "hint": "sk-..."
+      },
+      "model": {
+        "type": "string",
+        "description": "模型名称",
+        "default": "gpt-4o-mini",
+        "hint": "建议使用 mini 或 flash 类模型以降低延迟"
+      },
+      "system_prompt": {
+        "type": "text",
+        "description": "联网判断提示词",
+        "default": "你是一个【即时信息检索专家】。你的任务是分析用户的对话，判断是否需要外部信息。禁止对话，禁止解释，直接给出结果。\n1. 如果用户问的是**只有联网才能知道**的事（如今天的新闻、实时天气、特定网页内容、最近的一部新电影评价），请**仅**回复格式：“SEARCH:关键词”。\n2. 如果用户问的是**通用常识**、**闲聊**，或者**已经包含在上下文中**的信息，请务必回复: NO_SEARCH。\n\n【多轮对话分析指南】\n你必须分析整个对话历史，结合上下文提取完整的搜索意图。地点、时间等信息可能分布在不同的对话轮次中。\n**关键案例**: 用户先说“我明天要去南京”，然后问“那里的天气怎么样？”。你必须综合上下文，生成搜索词 “SEARCH:南京明天天气”，绝对不能只回复“SEARCH:南京天气”。\n\n【输出格式】\n- 需要搜索 -> `SEARCH:关键词`\n- 不需要搜索 -> `NO_SEARCH`\n\n不要回复任何其他内容。",
+        "hint": "辅助模型用于判断是否搜索的 Prompt"
+      },
+      "context_turns": {
+        "type": "int",
+        "description": "辅助判定携带历史轮数",
+        "default": 2,
+        "hint": "将最近 N 轮对话历史发给辅助模型，推荐2~5轮，解决多轮对话中的代词指代（如：搜一下“那里”的天气）"
+      }
+    }
+  },
+  "search_engine": {
+    "type": "object",
+    "description": "搜索引擎配置",
+    "items": {
+      "enable_tavily": {
+        "type": "bool",
+        "description": "开启 Tavily 搜索",
+        "default": true,
+        "hint": "开启后使用 Tavily API；关闭后将直接使用辅助模型的回复作为外部信息(适用于辅助模型本身自带联网能力的场景)"
+      },
+      "tavily_key": {
+        "type": "string",
+        "description": "Tavily API Key",
+        "hint": "tvly-..."
+      },
+      "max_results": {
+        "type": "int",
+        "description": "搜索结果最大片断数",
+        "default": 2
+      },
+      "include_summary": {
+        "type": "bool",
+        "description": "是否包含 Tavily 自动总结",
+        "default": true
+      },
+      "max_chars": {
+        "type": "int",
+        "description": "注入文本最大字数限制",
+        "default": 1000,
+        "hint": "防止搜索内容过多导致主模型 Context Window 溢出"
+      }
+    }
+  },
+      "per_page_chars": {
+        "type": "int",
+        "description": "单个网页内容最大字数",
+        "default": 200,
+        "hint": "每个搜索结果片段最多保留的字数"
+      },
+  "settings": {
+    "type": "object",
+    "description": "通用设置",
+    "items": {
+      "ignore_prefixes": {
+        "type": "list",
+        "description": "忽略指令前缀",
+        "default": ["/", "#", "!"],
+        "hint": "当消息以这些字符开头时，不触发智能搜索"
+      },
+      "skip_keywords": {
+        "type": "list",
+        "description": "跳过辅助判定关键词",
+        "default": [],
+        "hint": "【优先级高】若用户消息包含这些词，直接不触发辅助模型，完全不联网。"
+      },
+      "force_search_keywords": {
+        "type": "list",
+        "description": "强制联网搜索关键词",
+        "default": [],
+        "hint": "若用户消息包含这些词，跳过辅助模型判定，直接把用户输入当作搜索词进行搜索。"
+      },
+      "show_log": {
+        "type": "bool",
+        "description": "后台显示详细检索日志",
+        "default": true
+      }
+    }
+  }
+}

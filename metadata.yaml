@@ -1,0 +1,6 @@
+name: astrbot_plugin_smart_search
+display_name: 智能联网增强 (Smart Search)
+desc: 通过辅助模型智能判定联网请求，支持Tavily搜索增强。新增：自定义跳过/强制触发关键词、动态网页内容长度裁剪以及辅助模型上下文理解。(更新于2026.03.25)
+version: v1.2.0
+author: nikonotnicotine
+repo: https://github.com/nikonotnicotine/astrbot_plugin_smart_search
